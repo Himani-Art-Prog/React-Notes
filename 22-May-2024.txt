@@ -1,0 +1,321 @@
+Daily_Work Understanding 
+
+1) code snippet one:
+
+const updatedHeaderNavigator = (updatedItems) => {
+    const updatedData = data.map(page => ({
+      ...page,
+      items: page.items.map(item => {
+        if (item.id === selectedObject.id && item.type === 'header') {
+          return {
+            ...item,
+            content: {
+              ...item.content,
+              navigation: updatedItems
+            }
+          };
+        }
+        return item;
+      })
+    }));
+
+    setPageData(updatedData)
+  }
+  
+ Example in Simple Terms:
+  
+Imagine you have a list of books. Each book has a list of chapters. You want to update the title of a specific chapter in a specific book.
+
+1) Loop through books: For each book, make a copy.
+2) Loop through chapters in each book: For each chapter, check if it's the one you want to update.
+3) Update if matched: If it's the right chapter, change its title. If not, keep it as is.
+4) New list of chapters: Replace the book's chapters with this new list of chapters (some updated, some not).
+In your code, items: is like saying "replace the chapters of this book with these new chapters." The new chapters might have some updates, but the book itself and other chapters stay the same.
+
+  
+ Detailed Breakdown:
+  
+const updatedHeaderNavigator = (updatedItems) => {
+ 
+1) updatedHeaderNavigator is a function that takes one parameter, updatedItems.
+2) updatedItems represents the new navigation items that should replace the current navigation items in the header.
+
+const updatedData = data.map(page => ({
+
+1) data is assumed to be an array of page objects. The map method is used to create a new array updatedData by transforming each page in data.
+
+...page,
+items: page.items.map(item => {
+
+1) For each page, the code spreads the existing properties (...page) and then transforms its items array using another map method.
+
+ Key Points
+
+1)Outer map Function:
+We're looping through each page in data.For each page, we're creating a new object.
+
+2)Updating the page Object:
+...page copies all properties of the current page.
+items: specifies that we're going to update the items property of the page.
+
+3)Inner map Function:
+We're looping through each item in page.items.
+We're checking if the item is the one we want to update (by matching item.id and item.type)
+
+4)Updating the item:
+If the item matches the criteria, we create a new item with updated navigation content.
+If it doesn't match, we return the original item unchanged\
+
+Why Use items: Here
+items: is a key in the new page object.
+The value of items: is the result of page.items.map(...), which produces a new array of items (potentially modified).
+
+if (item.id === selectedObject.id && item.type === 'header') {
+ 
+1)Inside the map method for items, there is a conditional check:
+    i] item.id === selectedObject.id checks if the item's ID matches the selectedObject's ID.
+   ii] item.type === 'header' checks if the item is of type header.
+If both conditions are true (the item is the selected header), a new object is returned with the following changes
+ 
+return {
+  ...item,
+     content: {
+  ...item.content,
+     navigation: updatedItems
+     }
+};
+	  
+1) ...item spreads the existing properties of item.
+2) content: { ...item.content, navigation: updatedItems } updates the content property of the item:
+3)...item.content spreads the existing content properties.
+4) navigation: updatedItems sets the navigation property to updatedItems.
+  
+  
+ }
+return item;
+})
+  
+1) If the conditions are not met, the original item is returned unchanged.
+  
+}));
+  
+1) This closes the map method for the data array, resulting in updatedData, which is an array of pages with possibly updated items.
+
+setPageData(updatedData)
+
+1) Finally, setPageData(updatedData) is called to update the state with the new data structure.
+
+  Summary:
+
+The updatedHeaderNavigator function iterates through the data array, looking for a specific header item within each page's items list.
+When it finds the item that matches the selectedObject.id and is of type header, it updates its navigation content with updatedItems.
+The resulting data structure is then used to update the state via setPageData.
+
+This approach ensures that the data is immutably updated, preserving the integrity of the original data while applying the necessary changes.
+
+  Example:
+  
+file 1 
+ const data = [
+  {
+    id: 1,
+    items: [
+      { id: 'a', type: 'header', content: { navigation: [] } },
+      { id: 'b', type: 'body', content: {} }
+    ]
+  },
+  {
+    id: 2,
+    items: [
+      { id: 'c', type: 'header', content: { navigation: [] } },
+      { id: 'd', type: 'body', content: {} }
+    ]
+  }
+];
+
+file 2
+const updatedHeaderNavigator = (updatedItems) => {
+  const updatedData = data.map(page => ({
+    ...page,
+    items: page.items.map(item => {
+      if (item.id === 'a' && item.type === 'header') {
+        return {
+          ...item,
+          content: {
+            ...item.content,
+            navigation: updatedItems
+          }
+        };
+      }
+      return item;
+    })
+  }));
+
+  setPageData(updatedData);
+};
+ 
+ 
+ 2) Code Snippet Two:
+ 
+const getNewItemName = (index, e, propertyName) => {
+   console.log(index, e, propertyName);  //only console parameters
+    const newUpdatedIconCode = updatedItems.map(item => {
+      if (item.id === index && propertyName.includes("props")) {
+        const propIndex = propertyName.split('.')[1];
+        const updatedProps = { ...item.props, [propIndex]: e };
+        return { ...item, props: updatedProps };
+      }
+      if (item.id === index) {
+        return { ...item, [propertyName]: e };
+      }
+      return item;
+    });
+
+    updatedHeaderNavigator(newUpdatedIconCode);
+  };
+  
+   Detailed Breakdown:
+  
+const getNewItemName = (index, e, propertyName) => {
+
+1) This line defines a function named getNewItemName which takes three parameters: index, e, and propertyName
+
+const newUpdatedIconCode = updatedItems.map(item => {
+
+1) This line declares a constant named newUpdatedIconCode. It uses the map function to create a new array based on the updatedItems array. 
+The map function iterates over each item in the updatedItems array and performs some operation on it.
+
+if (item.id === index && propertyName.includes("props")) {
+  // Additional logic here
+}
+
+1)This line splits the propertyName string by the period ('.') character and retrieves the second element from the resulting array. 
+This assumes that propertyName is in the format "props.index".
+
+2)Here, propertyName.includes("props") checks if the propertyName string contains the substring "props". 
+If it does, it suggests that the property name is related to the props property of the item, and the 
+subsequent logic handles updating the props object accordingly.
+
+Why Use includes Here?
+Conditional Logic: The includes method helps determine whether the propertyName is associated with the props attribute of the item. 
+This distinction is important because the way the item is updated depends on whether propertyName relates to props or another attribute.
+
+String Parsing: By identifying the presence of "props" in propertyName, the code can correctly parse and handle nested property updates,
+ such as updating a specific property within the props object.
+ 
+const propIndex = propertyName.split('.')[1];
+
+1) This line splits the propertyName string by the period ('.') character and retrieves the second element from the resulting array. 
+This assumes that propertyName is in the format "props.index".
+
+2)Here, propertyName.split('.') - splits the propertyName string at each period ('.') and returns an array of substrings. 
+The [1] accesses the second element of this array (arrays are zero-indexed in JavaScript).
+
+Assume propertyName is 'props.color'. When propertyName.split('.') is called, it returns:
+['props', 'color']
+
+Accessing the second element with [1] gives:
+'color'
+
+const updatedProps = { ...item.props, [propIndex]: e };
+
+1) This line creates a new object updatedProps by spreading the properties of item.
+props and then setting the property with key propIndex to the value of e.
+
+return { ...item, props: updatedProps };
+
+1)This line returns a new object which is a copy of item, but with the props property replaced with the updatedProps object created in the previous step.
+
+if (item.id === index) { return { ...item, [propertyName]: e }; }
+
+1) This line checks if the id property of the current item object is equal to the index parameter. 
+If it is, it returns a new object which is a copy of item, but with the property specified by propertyName set to the value of e.
+
+return item;
+
+1) This line returns the original item object if none of the conditions above are met.
+
+updatedHeaderNavigator(newUpdatedIconCode);
+
+1)This line calls the updatedHeaderNavigator function and passes the newUpdatedIconCode array as an argument. 
+This function likely updates some part of the application UI with the new data.
+
+Overall, this function appears to update an array of items (updatedItems) based on the index, e,
+ and propertyName parameters passed to it. Depending on the conditions, 
+ it either updates the props property of an item or updates another specified property of the item, 
+ and then it triggers some action (updatedHeaderNavigator) with the updated array.
+ 
+ Example:
+ 
+let updatedItems = [
+  { id: 1, name: 'Item 1', price: 100, props: { color: 'red', size: 'M' } },
+  { id: 2, name: 'Item 2', price: 200, props: { color: 'blue', size: 'L' } },
+  { id: 3, name: 'Item 3', price: 300, props: { color: 'green', size: 'S' } }
+];
+
+const updatedHeaderNavigator = (newUpdatedIconCode) => {
+  console.log('Updated Items:', newUpdatedIconCode);
+};
+
+const getNewItemName = (index, e, propertyName) => {
+  console.log(index, e, propertyName);
+  const newUpdatedIconCode = updatedItems.map(item => {
+    if (item.id === index && propertyName.includes("props")) {
+      const propIndex = propertyName.split('.')[1];
+      const updatedProps = { ...item.props, [propIndex]: e };
+      return { ...item, props: updatedProps };
+    }
+    if (item.id === index) {
+      return { ...item, [propertyName]: e };
+    }
+    return item;
+  });
+
+  updatedHeaderNavigator(newUpdatedIconCode);
+};
+
+*******************************************************
+1) Update a direct property (name):
+
+Let's change the name of the item with id: 1 to "Updated Item 1".
+
+getNewItemName(1, 'Updated Item 1', 'name');
+
+output:
+
+Updated Items: [
+  { id: 1, name: 'Updated Item 1', price: 100, props: { color: 'red', size: 'M' } },
+  { id: 2, name: 'Item 2', price: 200, props: { color: 'blue', size: 'L' } },
+  { id: 3, name: 'Item 3', price: 300, props: { color: 'green', size: 'S' } }
+]
+ 
+2) Update a nested property (props.color):
+Let's change the color property of the props object of the item with id: 2 to "yellow". 
+
+getNewItemName(2, 'yellow', 'props.color');
+
+output:
+Updated Items: [
+  { id: 1, name: 'Updated Item 1', price: 100, props: { color: 'red', size: 'M' } },
+  { id: 2, name: 'Item 2', price: 200, props: { color: 'yellow', size: 'L' } },
+  { id: 3, name: 'Item 3', price: 300, props: { color: 'green', size: 'S' } }
+]
+
+Explanation
+
+1] Updating Direct Property:
+
+The function checks if item.id === index.
+If propertyName does not include "props", it updates the direct property (name in this case).
+The updated item is returned and replaces the old item in the new array.
+
+2]Updating Nested Property:
+
+The function checks if item.id === index and if propertyName includes "props".
+It splits propertyName to extract the nested property key (e.g., color from props.color).
+The props object is updated with the new value.
+The updated item, with the modified props, is returned and replaces the old item in the new array.
+
+In both cases, updatedHeaderNavigator is called with the new array of items, which logs the updated array to the console. This simulates updating the state in a real application.
+
+ 
