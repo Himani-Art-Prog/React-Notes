@@ -1,0 +1,104 @@
+Daily_Code_understanding
+
+1) code snippet one:
+
+
+const { useState, useRef } = React;
+
+const GrowingInput = () => {
+  const [width, setWidth] = useState(0);
+  
+  const changeHandler = e => {
+    setWidth(e.target.value.length);
+  };
+ 
+  return (
+    <input style={{ width: width +'ch'}} type="text" autoFocus onChange={changeHandler} />
+	
+	
+	[style={{ width: width + 'ch' }}: Sets the width of the input dynamically based on the number of characters.]
+	[autoFocus: Automatically focuses the input field when the component is rendered.]
+	
+	
+  )
+};
+
+const App = () => {
+  return (
+    <p>Lorem ipsum {<GrowingInput />} egestas arcu.</p>
+  );
+};
+
+
+
+1) Dynamic Width: As the user types, the width of the input field expands or contracts to fit the text content,
+ making it easier to see all entered characters without overflow.
+2) When the user types "hello" into the input field, the width will adjust to fit 5 characters (5ch). If they type "hello world", 
+the width will adjust to fit 11 characters (11ch). This resizing happens in real-time as the user types.2) 
+
+
+
+2) code snippet two:
+
+data file: 
+
+Navigation:[
+{
+label:"Hello World",
+type:'label',
+isPresent:true
+},
+{
+logo:DummyLogo, (here image import & passed)
+type:'logo',
+isPresent:true
+},
+{
+icon:"Home",
+type:'icon',
+isPresent:true
+},
+{
+Kpi:"not mapped",
+type:'kpi',
+isPresent:true
+},
+name:"timeStamp",
+format:"DD-MM-YYY"
+type:'timestamp',
+isPresent:true
+},
+profile:"profilename",
+type:'profile',
+isPresent:true
+}
+]
+
+
+****this is Array of object & i want to show 1st item of it using map method
+ 
+   const getValue = (item) => {
+    switch (item.type) {
+      case 'logo':
+        return item.logo;
+      case 'label':
+        return item.label;
+      case 'icon':
+        return item.icon;
+      case 'kpidata':
+        return item.kpiname;
+      case 'timestamp':
+        return item.format;
+      case 'profile':
+        return 'Profile'; // If you have a specific value for profile, replace this with item.profile or another relevant value
+      default:
+        return item.subComponentName;
+    }
+  };
+
+
+ {navigation.map((item, index) => (
+ <div className="d-flex align-item-center gap-2 m-1"
+ <span>{getValue(item)}</span>
+ </div>
+ ))}
