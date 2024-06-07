@@ -1,6 +1,5 @@
 Daily_Work Understanding
 
-
 1)code snippet one:
 
    const handleOnDragEnd = (result) => {
@@ -18,35 +17,39 @@ Daily_Work Understanding
 
   };
   
- Detailed Breakdown:
+*******************Detailed Breakdown******************
  
 const handleOnDragEnd = (result) => {
 
 1] The function handleOnDragEnd takes a single parameter, result.
 2] result is an object that contains information about the drag-and-drop event, such as the source and destination indices.
- 
- 
-if (!result.destination) return; 
+
+******************************************** 
+ if (!result.destination) return; 
 
 1] This checks if the destination where the item was dropped exists. If the item is dropped outside of any valid drop area, result.destination will be null.
 2] If there's no destination, the function exits early using return.
 
+********************************************
 const items = Array.from(navigation);
 
 1] navigation is assumed to be an array of items that can be reordered.
 2] Array.from(navigation) creates a shallow copy of the navigation array. This ensures that we don't mutate the original array directly.
 
+********************************************
 const [reorderedItem] = items.splice(result.source.index, 1);
 
 1] result.source.index is the index from which the item was dragged.
 2] items.splice(result.source.index, 1) removes the item from its original position in the items array.
 3] The removed item is stored in the reorderedItem variable.
 
+********************************************
 items.splice(result.destination.index, 0, reorderedItem);
 
 1] result.destination.index is the index where the item was dropped.
 2] items.splice(result.destination.index, 0, reorderedItem) inserts the reorderedItem into the new position in the items array.
 
+********************************************
 items.forEach((item, index) => {
   item.position = index + 1;
 });
@@ -55,16 +58,19 @@ items.forEach((item, index) => {
 2] For each item, it updates the position property to reflect the new order.
 3] index + 1 ensures the position starts from 1 instead of 0.
 
+*********************************************
 updatedHeaderNavigator(items);
 
 1] updatedHeaderNavigator is assumed to be a function that updates the state or context with the new order of items.
 2] This function is called with the newly ordered items array to reflect the changes in the UI or application state.
 
+*********************************************
 Summary
 The handleOnDragEnd function is a typical handler for drag-and-drop reordering. It checks if the drop is valid, 
 reorders the items array to reflect the new order, updates each item's position property, and then updates the state with the new order.
 This ensures that the UI and underlying data stay in sync after a drag-and-drop operation.
 
+***********************************************************************************************************************************************
 
 2) code snippet one:
 
@@ -110,12 +116,11 @@ const handleOnDragEnd = (result) => {
     updatedHeaderNavigator(updatedNavigation);
 };
 
- Detailed Breakdown:
+*******************Detailed Breakdown******************
  
 const handleOnDragEnd = (result) => {
     const { source, destination } = result;
 
- 
 1] The function handleOnDragEnd takes a single parameter, result.
 2] result is an object that contains information about the drag-and-drop event.
 3] Destructuring is used to extract source and destination from result.
