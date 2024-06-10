@@ -1,42 +1,32 @@
 Daily_Code_understanding
 
 1) code snippet one:
-
-
 const { useState, useRef } = React;
-
 const GrowingInput = () => {
   const [width, setWidth] = useState(0);
-  
   const changeHandler = e => {
     setWidth(e.target.value.length);
   };
- 
-  return (
+   return (
     <input style={{ width: width +'ch'}} type="text" autoFocus onChange={changeHandler} />
-	
-	
 	[style={{ width: width + 'ch' }}: Sets the width of the input dynamically based on the number of characters.]
 	[autoFocus: Automatically focuses the input field when the component is rendered.]
-	
-	
-  )
+	 )
 };
-
 const App = () => {
   return (
     <p>Lorem ipsum {<GrowingInput />} egestas arcu.</p>
   );
 };
 
-
+*******************Detailed Breakdown******************
 
 1) Dynamic Width: As the user types, the width of the input field expands or contracts to fit the text content,
  making it easier to see all entered characters without overflow.
 2) When the user types "hello" into the input field, the width will adjust to fit 5 characters (5ch). If they type "hello world", 
 the width will adjust to fit 11 characters (11ch). This resizing happens in real-time as the user types.2) 
 
-
+************************************************************************************************************
 
 2) code snippet two:
 
@@ -74,31 +64,70 @@ isPresent:true
 }
 ]
 
+ {navigation.map((item, index) => (
+ <div className="d-flex align-item-center gap-2 m-1"
+<span>{item.type === "logo" ? (nameOfImage ? nameOfImage : "Default Logo") : getValue(item)}</span>
+ </div>
+ ))}
 
-****this is Array of object & i want to show 1st item of it using map method
- 
-   const getValue = (item) => {
+(This <span> tag is mapped under array so we used getValue function here)
+   
+    const getValue = (item) => {
     switch (item.type) {
       case 'logo':
         return item.logo;
       case 'label':
         return item.label;
       case 'icon':
-        return item.icon;
+        return ` ${item.icon} (Icon)`;
       case 'kpidata':
-        return item.kpiname;
+        return item.kpivalue;
       case 'timestamp':
         return item.format;
       case 'profile':
-        return 'Profile'; // If you have a specific value for profile, replace this with item.profile or another relevant value
+        return 'Profile';
       default:
-        return item.subComponentName;
+        return item.type;
     }
   };
+  
+  *******************Detailed Breakdown******************
+   
+ <span>{item.type === "logo" ? (nameOfImage ? nameOfImage : "Default Logo") : getValue(item)}</span>
+ 1]If item.type is "logo", it checks if nameOfImage exists and renders it; 
+ otherwise, it renders "Default Logo". If item.type is not "logo", it renders the result of the getValue(item) function.
+ The rendered output is wrapped in a <span> element.
+ 
+ ********************************************************
+ 
+      const getValue = (item) => {
+    switch (item.type) {
+      case 'logo':
+        return item.logo;
+      case 'label':
+        return item.label;
+      case 'icon':
+        return ` ${item.icon} (Icon)`;
+      case 'kpidata':
+        return item.kpivalue;
+      case 'timestamp':
+        return item.format;
+      case 'profile':
+        return 'Profile';
+      default:
+        return item.type;
+    }
+  };
+  
+This code defines a function called getValue which takes an item object as input and returns a value based on the type property of that object.
+Depending on the type, it returns different values:
+
+1] If type is 'logo', it returns the value of the logo property of the item.
+2] If type is 'label', it returns the value of the label property of the item.
+3] If type is 'icon', it returns the icon property of the item followed by the string " (Icon)".
+4] If type is 'kpidata', it returns the value of the kpivalue property of the item.
+5] If type is 'timestamp', it returns the value of the format property of the item.
+6] If type is 'profile', it returns the string 'Profile'.
+If type doesn't match any of the specified cases, it returns the type property itself.
 
 
- {navigation.map((item, index) => (
- <div className="d-flex align-item-center gap-2 m-1"
- <span>{getValue(item)}</span>
- </div>
- ))}
