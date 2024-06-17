@@ -1,0 +1,86 @@
+Daily_Work Understanding
+
+1) code snippet one:
+
+    const [uniqueTypes, setUniqueTypes] = useState(['label', 'logo', 'icon', 'kpidata', 'timestamp', 'profile']);
+	1] Here I declare a state, inside it I put type of array (type:'label'),
+	
+*******************************************************************************************
+		 <div>
+         <select className="inputfeildofcss mb-1" value={selectedOption} onChange={handleSelectChange}>
+              <option value="NA">Please Select</option>
+                   {uniqueTypes.map((type, index) => (
+              <option key={index} value={type}>{type}</option>
+            ))}
+         </select>
+         </div>
+	 
+	1] This code renders a dropdown menu with selectable options. The selectedOption state variable controls the currently selected option,
+	and handleSelectChange is called whenever the user selects a different option, updating the state accordingly.
+
+********************************************************************************************
+    const [formData, setFormData] = useState({
+        label: '',
+        logo: null,
+        icon: '',
+        kpivalue: '',
+        format: '',
+        profile: '',
+        alignment: 'NA'
+    });
+	1] Here I declare a state, inside it I declare properties, These properties together represent the initial state.
+	2] Overall, this setup allows the component to maintain and update a form data object (formData) within a functional component
+	using React's state management mechanism.
+	 
+	*******************************************************************************************
+     <div>
+        {selectedOption === 'label' && (
+            <div>
+                <div className="d-flex align-items-center gap-1 m-2">
+                   <label className="lablefeildcss">Name:</label>
+                       <input
+                            className="inputfeildofcss"
+                            name="label"
+                            value={formData.label}
+                            onChange={handleInputChange}
+                        />
+                </div>
+                <div className="d-flex align-items-center gap-1 m-2">
+                    <label className="lablefeildcss">Align:</label>
+                        select className="inputfeildofcss mb-1"
+                            name="alignment"
+                            value={formData.alignment}
+                            onChange={handleInputChange}>
+                            <option value="NA">Please Select</option>
+                            <option value="left">left</option>
+                            <option value="right">right</option>
+                        </select>
+                </div>
+            </div>
+		)}
+Like 'Label' I can render 'logo', 'icon', 'kpidata', 'timestamp', 'profile',
+
+1] This code snippet is a conditional rendering block that renders a set of input fields based on the value of selectedOption.
+
+{selectedOption === 'label' && (...)}:
+
+2] This is a conditional rendering statement that checks if the value of selectedOption is equal to 'label'. 
+If it is, the content inside the parentheses is rendered; otherwise, it's not rendered.
+
+**************************************************************
+
+     <input
+        className="inputfeildofcss"
+        name="label"
+        value={formData.label}
+        onChange={handleInputChange}
+      />
+	  
+<input>: This is an <input> element used for text input. It's likely intended for the user to enter a name. It has the following attributes:
+className="inputfeildofcss": Applies CSS classes for styling.
+name="label": Specifies the name of the input field.
+value={formData.label}: Sets the value of the input field to the value of formData.label, which is likely being managed by React state.
+onChange={handleInputChange}: Calls the handleInputChange function when the value of the input field changes. This function likely updates the formData state.
+
+****************************************************************************************
+
