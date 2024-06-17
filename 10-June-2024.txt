@@ -31,8 +31,7 @@ Daily_Work Understanding
 	1] Here I declare a state, inside it I declare properties, These properties together represent the initial state.
 	2] Overall, this setup allows the component to maintain and update a form data object (formData) within a functional component
 	using React's state management mechanism.
-	 
-	*******************************************************************************************
+*******************************************************************************************
      <div>
         {selectedOption === 'label' && (
             <div>
@@ -67,7 +66,7 @@ Like 'Label' I can render 'logo', 'icon', 'kpidata', 'timestamp', 'profile',
 2] This is a conditional rendering statement that checks if the value of selectedOption is equal to 'label'. 
 If it is, the content inside the parentheses is rendered; otherwise, it's not rendered.
 
-**************************************************************
+*******************************************************************************************
 
      <input
         className="inputfeildofcss"
@@ -82,5 +81,115 @@ name="label": Specifies the name of the input field.
 value={formData.label}: Sets the value of the input field to the value of formData.label, which is likely being managed by React state.
 onChange={handleInputChange}: Calls the handleInputChange function when the value of the input field changes. This function likely updates the formData state.
 
-****************************************************************************************
+*******************************************************************************************
+<div className="d-flex align-items-center gap-1 m-2">
+    <label className="lablefeildcss">Align:</label>
+    <select
+        className="inputfeildofcss mb-1"
+        name="alignment"
+        value={formData.alignment}
+        onChange={handleInputChange}
+    >
+        <option value="NA">Please Select</option>
+        <option value="left">left</option>
+        <option value="right">right</option>
+    </select>
+</div>
+
+<select> Element:
+
+1] className="inputfeildofcss mb-1": Sets the CSS classes for styling the select input. Similar to the label, this class likely defines styles such as font size, border, and padding.
+2] name="alignment": Sets the name attribute of the select element, which is used when the form containing this select element is submitted.
+3] value={formData.alignment}: Binds the value of the select element to the alignment property in the formData state. This ensures that the select element reflects the current selected option and updates when formData.alignment changes.
+4] onChange={handleInputChange}: Sets the onChange event handler for the select element. When the user selects a different option, handleInputChange function is called, which updates the alignment property in the formData state.
+
+<option> Elements:
+
+1]<option value="NA">Please Select</option>: This is the default option displayed when the select element is first rendered. Its value is "NA", which indicates that no specific alignment option has been selected yet.
+2]<option value="left">left</option> and <option value="right">right</option>: These are the options the user can select from. They represent different alignment options (left and right). When the user selects one of these options, the value attribute of the <select> element will be updated accordingly.
+
+*******************************************************************************************
+
+ const handleInputChange = (e) => {
+        const { name, value, files } = e.target;
+        if (name === 'logo' && files.length > 0) {
+            const file = files[0];
+            const objectURL = URL.createObjectURL(file);
+            setFileURL(objectURL); 
+            setFormData(prevState => ({
+                ...prevState,
+                [name]: file
+            }));
+        } else {
+            setFormData(prevState => ({
+                ...prevState,
+                [name]: value
+            }));
+
+            if (name === 'format' && value !== 'Custom') {
+                setTimestampFormat(value);
+                setFormData(prevState => ({
+                    ...prevState,
+                    [name]: value
+                }));
+            }
+
+        }
+        if (name === 'alignment') {
+            setFormData(prevState => ({
+                ...prevState,
+                alignment: value
+            }));
+        }
+    };
+
+    useEffect(() => {
+        return () => {
+            if (fileURL) {
+                URL.revokeObjectURL(fileURL);
+            }
+        };
+    }, [fileURL]);
+    const handleSelectChange = (event) => {
+        setSelectedOption(event.target.value);
+    };
+
+handleInputChange Function:
+
+1] This function handles input changes (onChange events) on form elements.
+Destructures name, value, and files from the event target (e.target), which represents the element that triggered the event.
+
+2] File Input Handling ('logo'):
+If the input's name is 'logo' and files are selected (files.length > 0):
+Retrieves the first file from files.
+Creates a URL for the file using URL.createObjectURL(file).
+Sets this URL to state (fileURL) for potential preview or processing purposes.
+Updates formData state to include the selected file object under 'logo'.
+
+3] Non-File Input Handling:
+For other inputs (not 'logo' or when no files are selected for 'logo'):
+Updates formData state with the new name and value pair using the spread operator to preserve existing state. 
+
+4] Includes additional logic specific to the 'format' field:
+If name is 'format' and the selected value is not 'Custom', it updates another state variable (timestampFormat) and updates formData with the selected 'format' value.
+
+5] Alignment Input Handling:
+Specifically handles the 'alignment' input:
+Updates formData state with the selected 'alignment' value.
+
+6] useEffect Hook:
+This hook is used for side effects in functional components.
+The cleanup function inside useEffect runs when the component unmounts or when fileURL changes.
+Cleanup for Object URL:
+Checks if fileURL exists (is truthy) and revokes (cleans up) the object URL using URL.revokeObjectURL(fileURL) to prevent memory leaks.
+handleSelectChange Function:
+
+This function handles changes (onChange events) on a <select> element.
+Updates the selectedOption state with the value of the currently selected option (event.target.value).
+
+Summary:
+Purpose: The code manages form input changes (handleInputChange), including file uploads ('logo'), generic form fields, and specific logic for fields like 'format' and 'alignment'.
+State Management: Uses useState to manage states like selectedOption, formData, and fileURL.
+Effects: Uses useEffect for cleanup (URL.revokeObjectURL) and to handle dependencies (fileURL).
+This code snippet illustrates how to manage form input and state in React effectively, handling various scenarios such as file uploads and dynamic form field updates based on user input.
 
