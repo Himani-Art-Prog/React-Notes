@@ -1,0 +1,176 @@
+24 August -(Mapping Rest API) :
+1] I have 2 urls userCredential & userAuthentication so according to user login & logout I want to update time in userCredential table so way to do this:
+ANS: ( it's possible to update the login and logout times in the userCredential table based on the data from the userAuthentication table, even if there is no direct relationship between the two tables. Here’s how you can approach this problem)
+
+  const fetchData = async () => {
+    try {
+      const userResponse = await axios.get('http://localhost:8099/api/user/getusers', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const auditResponse = await axios.get('http://localhost:8099/api/auth/auth-history');
+      
+      const users = userResponse.data;
+      const filterUser = users.filter(user => !user.deleted); // Ensure you use the correct key for filtering deleted users
+      const audits = auditResponse.data;
+      
+      console.log(filterUser);
+      console.log(audits);
+      
+      // Process audit data
+      const userAuditMap = {};
+      audits.forEach(entry => {
+        const username = entry.userAuthHistoryModelPK.userName; // Make sure the key is correct
+        
+        // Check if this username has already been recorded
+        if (!userAuditMap[username]) {
+          userAuditMap[username] = {
+            loginTime: entry.userAuthHistoryModelPK.login_time,
+            logoutTime: entry.logoutTime
+          };
+        } else {
+          // Update the login and logout times to keep the latest ones
+          const existingLoginTime = new Date(userAuditMap[username].loginTime);
+          const existingLogoutTime = new Date(userAuditMap[username].logoutTime);
+          const currentLoginTime = new Date(entry.userAuthHistoryModelPK.login_time);
+          const currentLogoutTime = new Date(entry.logoutTime);
+  
+          if (currentLoginTime > existingLoginTime) {
+            userAuditMap[username].loginTime = entry.userAuthHistoryModelPK.login_time;
+          }
+  
+          if (currentLogoutTime > existingLogoutTime) {
+            userAuditMap[username].logoutTime = entry.logoutTime;
+          }
+        }
+      });
+  
+      // Map audit data to users
+      const updatedUsers = filterUser.map(user => {
+        const audit = userAuditMap[user.userName] || { loginTime: 'N/A', logoutTime: 'N/A' }; // Ensure you match the correct field here
+        return { 
+          ...user, 
+          loginTime: audit.loginTime, 
+          logoutTime: audit.logoutTime 
+        };
+      });
+  
+      // Update the state with the processed data
+      setTableData(updatedUsers);
+      setAuditTable(audits);
+    } catch (error) {
+      console.error('Error fetching data', error);
+    }
+  };
+
+2] I want to download report from date & to date of users so following steps to do it :
+
+ ANS : Query -> (based to created_date) - jr kadhi common  download  dyaych asel tr ha approach  used kru shakto (From date Time) to (To date Time) mdhe created _date pass karun pathvlelya date Time mdhe kiti users create zale ahe tyancha report download karu shakto.
+         
+[Backend Changes :
+@Query(value = "SELECT user_id, created_by, created_date, department, email_id, email_notification, employee_firstname, employee_lastname,     employee_middlename, is_deleted, " +"login_time, logout_time, mobile_no, modified_by, modified_date, password, \"position\", role_id, status, token, user_name, user_type " + "FROM public.db_viewer_user_details " + "WHERE created_date BETWEEN :fromDate AND :toDate", nativeQuery = true)
+List<UserCredentials> findUserDetailsByCreatedDateBetween(@Param("fromDate") LocalDateTime fromDate, @Param("toDate") LocalDateTime toDate);
+
+]
+SELECT user_id, created_by, created_date, department, email_id, email_notification, employee_firstname, employee_lastname, employee_middlename, is_deleted,          login_time, logout_time, mobile_no, modified_by, modified_date, password, "position", role_id, status, token, user_name, user_type
+FROM public.db_viewer_user_details where  created_date between '2024-08-20 16:55:45.917897' and '2024-08-20 16:55:45.917897';
+
+Steps to Download Data as Excel File
+1] Fetch Data from Backend: Retrieve the data using Axios.
+2] Convert Data to Excel Format: Use a library like xlsx to create an Excel file from the data.
+3] Trigger File Download: Create a Blob from the Excel file and trigger a download in the browser.
+
+  const [fromDate, setFromDate] = useState('');
+  const [fromTime, setFromTime] = useState('');
+  const [toDate, setToDate] = useState('');
+  const [toTime, setToTime] = useState('');
+
+  const formatDateTime = (date, time) => {
+    if (!date || !time) return '';
+  
+    // Combine date and time into one string
+    const dateTimeString = `${date}T${time}`;
+  
+    // Create a new Date object from the combined string
+    const dateTime = new Date(dateTimeString);
+  
+    // Extract components from the Date object
+    const year = dateTime.getUTCFullYear();
+    const month = String(dateTime.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(dateTime.getUTCDate()).padStart(2, '0');
+    const hours = String(dateTime.getUTCHours()).padStart(2, '0');
+    const minutes = String(dateTime.getUTCMinutes()).padStart(2, '0');
+    const seconds = String(dateTime.getUTCSeconds()).padStart(2, '0');
+    const milliseconds = String(dateTime.getUTCMilliseconds()).padStart(3, '0');
+  
+    // Format with microseconds (3 digits of milliseconds)
+    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds.padEnd(6, '0')}`;
+  };
+  
+ // Function to fetch report data
+ const fetchReportData = async () => {
+  try {
+    const formattedFromDateTime = formatDateTime(fromDate, fromTime);
+    const formattedToDateTime = formatDateTime(toDate, toTime);
+    const dateTimeData = {
+      fromDate: formattedFromDateTime,
+      toDate: formattedToDateTime,
+    };
+
+    const response = await axios.post('http://localhost:8099/api/user/report', dateTimeData, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+   
+    // Extract data
+    const data = response.data;
+
+    // Convert JSON data to a worksheet
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+
+    // Generate Excel file
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+
+    // Create a Blob from the buffer
+    const file = new Blob([excelBuffer], { type: 'application/octet-stream' });
+
+    // Trigger file download
+    saveAs(file, 'report.xlsx');
+    handleCloseAddModal();
+  } catch (error) {
+    console.error('Error fetching or processing data', error);
+  }
+};
+
+const handleSave = () => {
+  fetchReportData();
+};
+
+Extra Code :
+In backend I get below response -
+{
+        "userAuthHistoryModelPK": {
+            "userName": "Chanchal",
+            "login_time": "2024-08-23 17:24:19"
+        },
+        "roleName": "enduser",
+        "logoutTime": "2024-08-23 17:24:19",
+        "createdDate": null,
+        "modifiedDate": null,
+        "logoutType": "abc"
+    }
+while downloading excel show problem because of userAuthHistoryModelPK object so I,m creates one variable & fixed it,
+ // Function to fetch report data
+ const fetchReportData = async () => {
+  try {
+    const formattedFromDateTime = formatDateTime(fromDate, fromTime);
+    const formattedToDateTime = formatDateTime(toDate, toTime);
+    const dateTimeData = {
+      fromDate: formattedFromDateTime,
+      toDate: formattedToDateTime,
+      userName: userName
+    };
