@@ -1,0 +1,43 @@
+Pagination Calculation & Logic
+
+Logic:
+const companiesPerPage = 10;
+const totalCompanies = 27;
+
+for (let currentPage = 0; currentPage < Math.ceil(totalCompanies / companiesPerPage); currentPage++) {
+  const indexOfLastCompany = (currentPage + 1) * companiesPerPage;
+  const indexOfFirstCompany = indexOfLastCompany - companiesPerPage;
+
+  // Slice the companies array to get the companies for the current page
+  const companiesOnCurrentPage = companies.slice(indexOfFirstCompany, indexOfLastCompany);
+
+  console.log(`Page ${currentPage + 1}:`, companiesOnCurrentPage);
+}
+
+
+Calculation:
+To display 10 companies per page when you have a total of 27 companies, you can calculate which companies will appear on each page using the pagination logic you provided. Here's how it works:
+
+1. Variables
+Total Companies: 27
+Companies Per Page: 10
+2. Calculations for Each Page
+Page 1 (currentPage = 0):
+
+indexOfLastCompany = (0 + 1) * 10 = 10
+indexOfFirstCompany = 10 - 10 = 0
+Companies displayed: Companies 0 to 9
+Page 2 (currentPage = 1):
+
+indexOfLastCompany = (1 + 1) * 10 = 20
+indexOfFirstCompany = 20 - 10 = 10
+Companies displayed: Companies 10 to 19
+Page 3 (currentPage = 2):
+
+indexOfLastCompany = (2 + 1) * 10 = 30
+indexOfFirstCompany = 30 - 10 = 20
+Companies displayed: Companies 20 to 26
+Summary of Pages
+Page 1: Companies 0 to 9 (10 companies)
+Page 2: Companies 10 to 19 (10 companies)
+Page 3: Companies 20 to 26 (7 companies, as there are only 7 left)
