@@ -1,0 +1,669 @@
+26 August - (Role Page)
+
+1] I want to create form with input fields & Two divs that hold page names (pages name come from backend) with data exchange functionality
+
+import React, { useState } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import '../Style/RoleStyle.css'
+
+const RolePage = () => {
+  // Initial page data with unique IDs
+  const initialPages = [
+    { id: 1, name: 'Home Page ' },
+    { id: 2, name: 'About Page' },
+    { id: 3, name: 'CPP Control Page' },
+    { id: 4, name: 'TPS Overview Page' },
+    { id: 5, name: 'Heat Consumption page' },
+    { id: 6, name: 'Electricity Consumption page' },
+    { id: 7, name: 'Boilder Calculations' },
+    { id: 8, name: 'Hydrogen Generation' },
+    { id: 9, name: 'AWN Units Pages' },
+    { id: 10, name: 'Fuel page' }
+  ];
+
+
+  // State for pages in each section
+  const [containerData, setContainerData] = useState(initialPages);
+  const[containerDataOne,setContainerDataOne] = useState(adminData)
+  const [blankContainer, setBlankContainer] = useState([]);
+
+  // State for selected page
+  const [selectedPage, setSelectedPage] = useState(null);
+
+  // State for access type
+  const [accessType, setAccessType] = useState('Read');
+
+  // State for roleName
+  const [roleName, setRoleName] = useState('');
+
+  // Move a selected page from one section to the other
+  const movePage = () => {
+    if (selectedPage) {
+      setContainerData(prev => prev.filter(p => p.id !== selectedPage.id));
+      setBlankContainer(prev => [...prev, selectedPage]);
+      setSelectedPage(null); // Clear selection after moving
+    }
+  };
+
+  // Move a selected page back from one section to the other
+  const movePageBack = () => {
+    if (selectedPage) {
+      setBlankContainer(prev => prev.filter(p => p.id !== selectedPage.id));
+      setContainerData(prev => [...prev, selectedPage]);
+      setSelectedPage(null); // Clear selection after moving
+    }
+  };
+
+  // Move all pages from one section to the other
+  const moveAllPages = (from, to) => {
+    if (from === 'admin') {
+      setBlankContainer(prev => [...prev, ...containerData]);
+      setContainerData([]);
+    } else {
+      setContainerData(prev => [...prev, ...blankContainer]);
+      setBlankContainer([]);
+    }
+    setSelectedPage(null); // Clear selection after moving all
+  };
+
+  // Handle form submission
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Role Name:', roleName);
+    console.log('Blank Container Pages:', blankContainer);
+    console.log('Access Type:', accessType);
+  };
+
+  return (
+    <div className='bg'>
+      <div className="container my-5">
+        <form className="formdiv mb-4" onSubmit={handleSubmit}>
+          <div className='d-flex justify-content-center'>
+            <h6>
+              Create Role
+            </h6>
+          </div>
+          <div className='d-flex gap-5'>
+            <div className="d-flex mb-3">
+              <label htmlFor="roleName" className="form-label" style={{ width: '150px' }}>Role Name:</label>
+              <input
+                type="text"
+                className="form-control"
+                placeholder='Enter role type'
+                id="roleName"
+                name="roleName"
+                value={roleName}
+                onChange={(e) => setRoleName(e.target.value)}
+              />
+            </div>
+            <div className="d-flex mb-3">
+              <label htmlFor="accessType" className="form-label" style={{ width: '170px' }}>Access Type:</label>
+              <select
+                id="accessType"
+                name="accessType"
+                className="form-select"
+                value={accessType}
+                onChange={(e) => setAccessType(e.target.value)}
+              >
+                <option value="">Please Select</option>
+                <option value="Read">Read</option>
+                <option value="Read/Write">Read/Write</option>
+              </select>
+            </div>
+          </div>
+          <div className="d-flex justify-content-between">
+            <div className="flex-fill p-3 border">
+              <h3></h3>
+              <ul className="list-group">
+                <ul className="list-group">
+                  {containerData.length === 0 ? (
+                    <li className="list-group-item text-center">
+                      No Data Available
+                    </li>
+                  ) : (
+                    containerData.map(page => (
+                      <li
+                        key={page.id}
+                        className={`list-group-item ${selectedPage && selectedPage.id === page.id ? 'active' : ''}`}
+                        onClick={() => setSelectedPage(page)}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        {page.name}
+                      </li>
+                    ))
+                  )}
+                </ul>
+
+              </ul>
+            </div>
+
+            <div className="d-flex flex-column justify-content-center align-items-center p-3">
+
+              <button type="button" className="Arrowbuttons" onClick={movePage}> <i className="pi pi-angle-right"></i></button>
+              <button type="button" className="Arrowbuttons" onClick={() => moveAllPages('admin', 'dashboard')}><i className="pi pi-angle-double-right"></i></button>
+              <button type="button" className="Arrowbuttons" onClick={() => moveAllPages('dashboard', 'admin')}><i className="pi pi-angle-double-left"></i></button>
+              <button type="button" className="Arrowbuttons" onClick={movePageBack}> <i className="pi pi-angle-left"></i></button>
+            </div>
+
+            <div className="flex-fill p-3 border">
+              <h3></h3>
+              <ul className="list-group">
+                {blankContainer.length === 0 ? (
+                  <li className='list-group-item text-center'>
+                    No Data Available
+                  </li>
+                ):( blankContainer.map(page => (
+                  <li
+                    key={page.id}
+                    className={`list-group-item ${selectedPage && selectedPage.id === page.id ? 'active' : ''}`}
+                    onClick={() => setSelectedPage(page)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    {page.name}
+                  </li>
+                ))
+                )}
+              </ul>
+            </div>
+          </div>
+          <button type="submit" className="btn btn-primary">Submit</button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default RolePage;
+
+2 ] In below code I have array of object on which I perform same process with more functionality
+import React, { useState } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import '../Style/RoleStyle.css';
+
+const RolePage = () => {
+  // Initial data for lists with unique IDs
+  const initialPages = [
+    {
+      id: 1,
+      name: 'Dashboard',
+      items: [
+        { id: 101, name: 'Home Page' },
+        { id: 102, name: 'About Page' },
+        { id: 103, name: 'CPP Control Page' },
+        { id: 104, name: 'TPS Overview Page' },
+        { id: 105, name: 'Heat Consumption Page' },
+        { id: 106, name: 'Electricity Consumption Page' },
+        { id: 107, name: 'Boiler Calculations' },
+        { id: 108, name: 'Hydrogen Generation' },
+        { id: 109, name: 'AWN Units Pages' },
+        { id: 110, name: 'Fuel Page' }
+      ]
+    },
+    {
+      id: 2,
+      name: 'Admin',
+      items: [
+        { id: 201, name: 'Company Details' },
+        { id: 202, name: 'Company Details Table' },
+        { id: 203, name: 'User Details' },
+        { id: 204, name: 'Subscription Details' },
+        { id: 205, name: 'Invoice Details' },
+        { id: 206, name: 'User Audit Report' },
+        { id: 207, name: 'Subscription Report' }
+      ]
+    },
+    {
+      id: 3,
+      name: 'Report',
+      items: [
+        { id: 301, name: 'Report1' },
+        { id: 302, name: 'Report2' },
+        { id: 303, name: 'Report3' },
+        { id: 304, name: 'Report4' },
+        { id: 305, name: 'Report5' }
+      ]
+    }
+  ];
+  const [containerData, setContainerData] = useState(initialPages);
+  const [blankContainer, setBlankContainer] = useState([]);
+
+  const [selectedList, setSelectedList] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(null);
+
+  // Move an entire list to the blankContainer
+  const moveList = () => {
+    if (selectedList) {
+      setBlankContainer(prev => [...prev, selectedList]);
+      setContainerData(prev => prev.filter(list => list.id !== selectedList.id));
+      setSelectedList(null);
+    }
+  };
+  const moveItem = () => {
+    if (selectedItem) {
+      // Find the list name from containerData
+      const sourceList = containerData.find(list => list.items.some(item => item.id === selectedItem.id));
+
+      // Remove item from the selected list in containerData
+      setContainerData(prev => prev.map(list => {
+        if (list.id === sourceList.id) {
+          return {
+            ...list,
+            items: list.items.filter(item => item.id !== selectedItem.id)
+          };
+        }
+        return list;
+      }));
+
+      // Add item to the corresponding list in blankContainer
+      setBlankContainer(prev => {
+        const existingList = prev.find(list => list.id === sourceList.id);
+
+        if (existingList) {
+          // List exists, update it
+          return prev.map(list => {
+            if (list.id === sourceList.id) {
+              return { ...list, items: [...list.items, selectedItem] };
+            }
+            return list;
+          });
+        } else {
+          // List does not exist, create a new one
+          return [...prev, { id: sourceList.id, name: sourceList.name, items: [selectedItem] }];
+        }
+      });
+
+      // Clear the selected item
+      setSelectedItem(null);
+    }
+  };
+  // Move all pages from one section to another
+  const moveAllPages = (from, to) => {
+    if (from === 'dashboard') {
+      setBlankContainer(prev => [...prev, ...containerData]);
+      setContainerData([]);
+    } else {
+      setContainerData(prev => [...prev, ...blankContainer]);
+      setBlankContainer([]);
+    }
+    setSelectedList(null); // Clear selection after moving all
+  };
+
+  // Handle form submission
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Selected List:', selectedList);
+    console.log('Selected Item:', selectedItem);
+  };
+
+  const moveBackItem = () => {
+    if (selectedItem) {
+      // Find the source list from blankContainer
+      const sourceList = blankContainer.find(list => list.items.some(item => item.id === selectedItem.id));
+
+      if (sourceList) {
+        // Remove item from the selected list in blankContainer
+        setBlankContainer(prev => prev.map(list => {
+          if (list.id === sourceList.id) {
+            return {
+              ...list,
+              items: list.items.filter(item => item.id !== selectedItem.id)
+            };
+          }
+          return list;
+        }).filter(list => list.items.length > 0)); // Remove list if it has no items
+
+        // Add item back to the corresponding list in containerData
+        setContainerData(prev => {
+          const existingList = prev.find(list => list.id === sourceList.id);
+
+          if (existingList) {
+            // List exists, update it
+            return prev.map(list => {
+              if (list.id === sourceList.id) {
+                return { ...list, items: [...list.items, selectedItem] };
+              }
+              return list;
+            });
+          } else {
+            // List does not exist, create a new one
+            return [...prev, { id: sourceList.id, name: sourceList.name, items: [selectedItem] }];
+          }
+        });
+
+        // Clear the selected item
+        setSelectedItem(null);
+      }
+    }
+  };
+  return (
+    <div className='bg'>
+      <div className="container my-5">
+        <form className="formdiv mb-4" onSubmit={handleSubmit}>
+          <div className='d-flex justify-content-center'>
+            <h6>Create Role</h6>
+          </div>
+          <div className="d-flex justify-content-between">
+            <div className="flex-fill p-3 border">
+              <h3>Available Lists</h3>
+              {containerData.length === 0 ? (
+                <p>No Data Available</p>
+              ) : (
+                containerData.map((list) => (
+                  <div key={list.id} className="mb-4">
+                    <h5>{list.name}</h5>
+                    <ul className="list-group">
+                      {list.items.length === 0 ? (
+                        <li className="list-group-item text-center">No Data Available</li>
+                      ) : (
+                        list.items.map(item => (
+                          <li
+                            key={item.id}
+                            className={`list-group-item ${selectedItem && selectedItem.id === item.id ? 'active' : ''}`}
+                            onClick={() => setSelectedItem({ ...item, listId: list.id })}
+                            style={{ cursor: 'pointer' }}
+                          >
+                            {item.name}
+                          </li>
+                        ))
+                      )}
+                    </ul>
+                    {/* <button
+                      type='button'
+                      onClick={() => setSelectedList(list)}
+                      className={`btn btn-primary mt-2 ${selectedList && selectedList.id === list.id ? 'active' : ''}`}
+                    >
+                      Select {list.name}
+                    </button> */}
+                  </div>
+                ))
+              )}
+            </div>
+            <div className="d-flex flex-column justify-content-center align-items-center p-3">
+              <button type="button" className="Arrowbuttons" onClick={moveItem}>
+                <i className="pi pi-angle-right"></i>
+              </button>
+              <button type="button" className="Arrowbuttons" onClick={() => moveAllPages('dashboard', 'admin')}>
+                <i className="pi pi-angle-double-right"></i>
+              </button>
+              <button type="button" className="Arrowbuttons" onClick={() => moveAllPages('admin', 'dashboard')}>
+                <i className="pi pi-angle-double-left"></i>
+              </button>
+              <button type="button" className="Arrowbuttons" onClick={moveBackItem}>
+                <i className="pi pi-angle-left"></i>
+              </button>
+            </div>
+
+            <div className="flex-fill p-3 border">
+              <h3>Moved Items</h3>
+              {blankContainer.length === 0 ? (
+                <p>No Data Available</p>
+              ) : (
+                blankContainer.map(list => (
+                  <div key={list.id} className="mb-4">
+                    <h5>{list.name}</h5>
+                    <ul className="list-group">
+                      {list.items.length === 0 ? (
+                        <li className="list-group-item text-center">No Data Available</li>
+                      ) : (
+                        list.items.map(item => (
+                          <li
+                            key={item.id}
+                            className={`list-group-item ${selectedItem && selectedItem.id === item.id ? 'active' : ''}`}
+                            onClick={() => setSelectedItem({ ...item, listId: list.id })}
+                            style={{ cursor: 'pointer' }}
+                          >
+                            {item.name}
+                          </li>
+                        ))
+                      )}
+                    </ul>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+          <button type="submit" className="btn btn-primary">Submit</button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default RolePage;
+
+Proper working:
+import React, { useState } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import '../Style/RoleStyle.css';
+
+const RolePage = () => {
+  // Initial data for lists with unique IDs
+  const initialPages = [
+    {
+      id: 1,
+      name: 'Dashboard',
+      items: [
+        { id: 101, name: 'Home Page' },
+        { id: 102, name: 'About Page' },
+        { id: 103, name: 'CPP Control Page' },
+        { id: 104, name: 'TPS Overview Page' },
+        { id: 105, name: 'Heat Consumption Page' },
+        { id: 106, name: 'Electricity Consumption Page' },
+        { id: 107, name: 'Boiler Calculations' },
+        { id: 108, name: 'Hydrogen Generation' },
+        { id: 109, name: 'AWN Units Pages' },
+        { id: 110, name: 'Fuel Page' }
+      ]
+    },
+    {
+      id: 2,
+      name: 'Admin',
+      items: [
+        { id: 201, name: 'Company Details' },
+        { id: 202, name: 'Company Details Table' },
+        { id: 203, name: 'User Details' },
+        { id: 204, name: 'Subscription Details' },
+        { id: 205, name: 'Invoice Details' },
+        { id: 206, name: 'User Audit Report' },
+        { id: 207, name: 'Subscription Report' }
+      ]
+    },
+    {
+      id: 3,
+      name: 'Report',
+      items: [
+        { id: 301, name: 'Report1' },
+        { id: 302, name: 'Report2' },
+        { id: 303, name: 'Report3' },
+        { id: 304, name: 'Report4' },
+        { id: 305, name: 'Report5' }
+      ]
+    },
+    {
+      id: 4,
+      name: 'Tags',
+      items: [
+        { id: 401, name: 'Tag1' },
+        { id: 402, name: 'Tag2' },
+        { id: 403, name: 'Tag3' },
+        { id: 404, name: 'Tag4' },
+        { id: 405, name: 'Tag5' }
+      ]
+    }
+  ];
+
+  const [containerData, setContainerData] = useState(initialPages);
+  const [blankContainer, setBlankContainer] = useState([]);
+
+  const [selectedItems, setSelectedItems] = useState([]);
+
+  // Toggle item selection
+  const toggleItemSelection = (item, listId) => {
+    setSelectedItems(prev => {
+      const isSelected = prev.some(selected => selected.id === item.id && selected.listId === listId);
+      if (isSelected) {
+        return prev.filter(selected => !(selected.id === item.id && selected.listId === listId));
+      } else {
+        return [...prev, { ...item, listId }];
+      }
+    });
+  };
+
+  // Move selected items from containerData to blankContainer
+  const moveSelectedItems = () => {
+    if (selectedItems.length > 0) {
+      setContainerData(prev => {
+        return prev.map(list => {
+          if (selectedItems.some(item => item.listId === list.id)) {
+            return { ...list, items: list.items.filter(item => !selectedItems.some(selected => selected.id === item.id)) };
+          }
+          return list;
+        });
+      });
+
+      setBlankContainer(prev => {
+        const updatedLists = [...prev];
+        selectedItems.forEach(item => {
+          const existingList = updatedLists.find(list => list.id === item.listId);
+          if (existingList) {
+            existingList.items.push(item);
+          } else {
+            updatedLists.push({ id: item.listId, name: `List ${item.listId}`, items: [item] });
+          }
+        });
+        return updatedLists;
+      });
+
+      setSelectedItems([]); // Clear selected items
+    }
+  };
+
+  // Move selected items from blankContainer to containerData
+  const moveSelectedItemsBack = () => {
+    if (selectedItems.length > 0) {
+      setBlankContainer(prev => {
+        return prev.map(list => {
+          if (selectedItems.some(item => item.listId === list.id)) {
+            return { ...list, items: list.items.filter(item => !selectedItems.some(selected => selected.id === item.id)) };
+          }
+          return list;
+        }).filter(list => list.items.length > 0); // Remove empty lists
+      });
+
+      setContainerData(prev => {
+        const updatedLists = [...prev];
+        selectedItems.forEach(item => {
+          const existingList = updatedLists.find(list => list.id === item.listId);
+          if (existingList) {
+            existingList.items.push(item);
+          } else {
+            updatedLists.push({ id: item.listId, name: `List ${item.listId}`, items: [item] });
+          }
+        });
+        return updatedLists;
+      });
+
+      setSelectedItems([]); // Clear selected items
+    }
+  };
+
+  // Handle form submission
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Selected Items:', selectedItems);
+  };
+
+  return (
+    <div className='bg'>
+      <div className="container my-5">
+        <form className="formdiv mb-4" onSubmit={handleSubmit}>
+          <div className='d-flex justify-content-center'>
+            <h6>Create Role</h6>
+          </div>
+          <div className="d-flex justify-content-between">
+            <div className="flex-fill p-3 border">
+              <h3>Available Lists</h3>
+              {containerData.length === 0 ? (
+                <p>No Data Available</p>
+              ) : (
+                containerData.map(list => (
+                  <div key={list.id} className="mb-4">
+                    <h5>{list.name}</h5>
+                    <ul className="list-group">
+                      {list.items.length === 0 ? (
+                        <li className="list-group-item text-center">No Data Available</li>
+                      ) : (
+                        list.items.map(item => (
+                          <li
+                            key={item.id}
+                            className={`list-group-item ${selectedItems.some(selected => selected.id === item.id && selected.listId === list.id) ? 'active' : ''}`}
+                            onClick={() => toggleItemSelection(item, list.id)}
+                            style={{ cursor: 'pointer' }}
+                          >
+                            {item.name}
+                          </li>
+                        ))
+                      )}
+                    </ul>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div className="d-flex flex-column justify-content-center align-items-center p-3">
+              <button
+                type="button"
+                className="Arrowbuttons"
+                onClick={moveSelectedItems}
+                disabled={selectedItems.length === 0}
+              >
+                <i className="pi pi-angle-right"></i>
+              </button>
+              <button
+                type="button"
+                className="Arrowbuttons"
+                onClick={moveSelectedItemsBack}
+                disabled={selectedItems.length === 0}
+              >
+                <i className="pi pi-angle-left"></i>
+              </button>
+            </div>
+
+            <div className="flex-fill p-3 border">
+              <h3>Moved Lists</h3>
+              {blankContainer.length === 0 ? (
+                <p>No Data Available</p>
+              ) : (
+                blankContainer.map(list => (
+                  <div key={list.id} className="mb-4">
+                    <h5>{list.name}</h5>
+                    <ul className="list-group">
+                      {list.items.length === 0 ? (
+                        <li className="list-group-item text-center">No Data Available</li>
+                      ) : (
+                        list.items.map(item => (
+                          <li
+                            key={item.id}
+                            className={`list-group-item ${selectedItems.some(selected => selected.id === item.id && selected.listId === list.id) ? 'active' : ''}`}
+                            onClick={() => toggleItemSelection(item, list.id)}
+                            style={{ cursor: 'pointer' }}
+                          >
+                            {item.name}
+                          </li>
+                        ))
+                      )}
+                    </ul>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+
+          <button type="submit" className="btn btn-primary">Submit</button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default RolePage;
